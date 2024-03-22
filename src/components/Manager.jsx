@@ -81,13 +81,34 @@
 // export default Manager;
 
 // my code
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Manager = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [form, setForm] = useState({ site: "", username: "", password: "" });
+  const [passwordArray, setPasswordArray] = useState([]);
+
+  useEffect(() => {
+    let passwords = localStorage.getItem("passwords");
+    if (passwords) {
+      setPasswordArray(JSON.parse(passwords));
+    }
+  }, []);
+
   const togglePasswordVisibility = () => {
     // Toggle the state
     setIsPasswordShown(!isPasswordShown);
+  };
+
+  const savePassword = () => {
+    // console.log(form);
+    setPasswordArray([...passwordArray, form]);
+    localStorage.setItem("password", JSON.stringify([...passwordArray, form]));
+    console.log([...passwordArray, form]);
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
   return (
     <>
@@ -111,26 +132,32 @@ const Manager = () => {
         </p>
         <div className="flex flex-col p-4 text-black gap-8 items-center">
           <input
+            value={form.site}
+            onChange={handleChange}
             placeholder="Enter Website URL"
             className="rounded-full border border-green-500 w-full p-4 py-1"
             type="text"
-            name=""
+            name="site"
             id=""
           />
           <div className="flex w-full justify-between gap-8">
             <input
+              value={form.username}
+              onChange={handleChange}
               placeholder="Enter Username"
               className="rounded-full border border-green-500 w-full p-4 py-1"
               type="text"
-              name=""
+              name="username"
               id=""
             />
             <div className="relative">
               <input
+                value={form.password}
+                onChange={handleChange}
                 placeholder="Enter Password"
                 className="rounded-full border border-green-500 w-full p-4 py-1"
                 type={isPasswordShown ? "text" : "password"} // Toggle input type
-                name=""
+                name="password"
                 id=""
               />
               <span
@@ -146,7 +173,10 @@ const Manager = () => {
               </span>
             </div>
           </div>
-          <button className="flex justify-center items-center gap-4 hover:bg-green-500 bg-green-600 rounded-full px-4 py-2 w-fit border">
+          <button
+            onClick={savePassword}
+            className="flex justify-center items-center gap-4 hover:bg-green-500 bg-green-600 rounded-full px-4 py-2 w-fit border"
+          >
             <lord-icon
               src="https://cdn.lordicon.com/jgnvfzqg.json"
               trigger="hover"
